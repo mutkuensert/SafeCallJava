@@ -1,14 +1,31 @@
+/**
+ * Prevents [NullPointerException] in java
+ */
 object SafeCall {
 
-    /**
-     * Prevents [NullPointerException] in java
-     */
     @JvmStatic
     fun <T : Any> get(block: () -> T): T? {
         return try {
             block.invoke()
-        } catch (e: NullPointerException) {
+        } catch (_: NullPointerException) {
             null
+        }
+    }
+    
+    @JvmStatic
+    fun <T : Any> getOrElse(block: () -> T, default: T): T {
+        return try {
+            block.invoke()
+        } catch (_: NullPointerException) {
+            default
+        }
+    }
+
+    @JvmStatic
+    fun call(block: Runnable) {
+        try {
+            block.run()
+        } catch (_: NullPointerException) {
         }
     }
 }
