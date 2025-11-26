@@ -1,40 +1,35 @@
 # SafeCallJava
 A simple class to prevent NullPointerExceptions in Java
 
-#### Java
-
-```Java
-import java.util.function.Supplier;
-
-public class SafeCall {
-
-    /**
-     * Prevents NullPointerException
-     */
-    public static <T> T get(Supplier<T> supplier) {
-        try {
-            return supplier.get();
-        } catch (NullPointerException e) {
-            return null;
-        }
-    }
-}
-```
-
-#### Kotlin
-
 ```kotlin
+/**
+ * Prevents [NullPointerException] in java
+ */
 object SafeCall {
 
-    /**
-     * Prevents [NullPointerException] in java
-     */
     @JvmStatic
     fun <T : Any> get(block: () -> T): T? {
         return try {
             block.invoke()
-        } catch (e: NullPointerException) {
+        } catch (_: NullPointerException) {
             null
+        }
+    }
+    
+    @JvmStatic
+    fun <T : Any> getOrElse(block: () -> T, default: T): T {
+        return try {
+            block.invoke()
+        } catch (_: NullPointerException) {
+            default
+        }
+    }
+
+    @JvmStatic
+    fun call(block: Runnable) {
+        try {
+            block.run()
+        } catch (_: NullPointerException) {
         }
     }
 }
@@ -46,4 +41,4 @@ object SafeCall {
 SafeCall.get(() -> getSomeObj().getProperty());
 ```
 
-If **getSomeObj** method returns null, instead of occurence of a NullPointerException, SafeCall::get will return null.
+If **getSomeObj** method returns null, instead of throwing a NullPointerException, SafeCall::get will return null.
